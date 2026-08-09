@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>КП и договоры · 1 полугодие 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800&family=Golos+Text:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0B0D12; --ink-2:#40464F; --mute:#767D89;
+  --paper:#E7E7EA; --card:#FFFFFF; --line:#DEDEE4; --line-2:#EFEFF2;
+  --p1:#2438FF; --p2:#FF4D00; --p3:#0B7A4B; --p4:#F5B301;
+  --ct:#D6006E; --ok:#0B7A4B;
+  --r:18px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--paper); color:var(--ink);
+  font-family:"Golos Text",-apple-system,Segoe UI,sans-serif;
+  font-size:15px; line-height:1.45; -webkit-font-smoothing:antialiased;
+  font-variant-numeric:tabular-nums;
+}
+.wrap{max-width:1080px;margin:0 auto;padding:18px 14px 56px;display:flex;flex-direction:column;gap:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:20px}
+h1,h2,h3{margin:0;font-family:"Unbounded",sans-serif;font-weight:800;letter-spacing:-.02em}
+h1{font-size:26px;line-height:1.15}
+h2{font-size:15px;text-transform:uppercase;letter-spacing:.04em;font-weight:600}
+.eyebrow{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute)}
+.sub{color:var(--ink-2);font-size:14px}
+.head{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end;justify-content:space-between}
+.cardhead{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:14px}
+.cardhead .note{font-size:12.5px;color:var(--mute)}
+
+/* KPI */
+.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.kpi{border:1px solid var(--line);border-radius:14px;padding:12px 13px;background:var(--card)}
+.kpi .lab{font-size:11.5px;color:var(--mute);line-height:1.25;min-height:28px}
+.kpi .val{font-family:"Unbounded",sans-serif;font-weight:800;font-size:23px;letter-spacing:-.03em;margin-top:4px}
+.kpi .val small{font-family:"Golos Text",sans-serif;font-weight:600;font-size:12px;color:var(--ink-2);letter-spacing:0}
+.kpi.hi{background:var(--ink);border-color:var(--ink)}
+.kpi.hi .lab{color:#A7ADB8}.kpi.hi .val{color:#fff}.kpi.hi .val small{color:#A7ADB8}
+
+/* фильтры */
+.filters{position:sticky;top:0;z-index:9;background:rgba(255,255,255,.94);backdrop-filter:blur(8px)}
+.frow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.frow+.frow{margin-top:10px;padding-top:10px;border-top:1px solid var(--line-2)}
+.flab{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--mute);margin-right:4px}
+.chip{border:1.5px solid var(--line);background:#fff;color:var(--ink-2);border-radius:999px;padding:6px 13px;font:600 13px "Golos Text",sans-serif;cursor:pointer;display:inline-flex;align-items:center;gap:7px;transition:.14s}
+.chip:hover{border-color:var(--ink-2)}
+.chip .dot{width:9px;height:9px;border-radius:3px;background:currentColor;display:inline-block}
+.chip.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.chip.on.c1{background:var(--p1);border-color:var(--p1)}
+.chip.on.c2{background:var(--p2);border-color:var(--p2)}
+.chip.on.c3{background:var(--p3);border-color:var(--p3)}
+.chip.on.c4{background:var(--p4);border-color:var(--p4);color:#22190a}
+.chip:focus-visible{outline:2.5px solid var(--p1);outline-offset:2px}
+.chip.sm{padding:5px 11px;font-size:12.5px}
+
+/* графики и таблицы */
+.bars{display:flex;flex-direction:column;gap:9px}
+.brow{display:grid;grid-template-columns:104px 1fr 150px;gap:12px;align-items:center}
+.brow .nm{font-weight:600;font-size:13.5px;display:flex;align-items:center;gap:8px}
+.sw{width:11px;height:11px;border-radius:3px;flex:0 0 auto}
+.track{background:var(--line-2);border-radius:6px;height:22px;overflow:hidden}
+.fill{height:100%;border-radius:6px;transition:width .5s cubic-bezier(.22,1,.36,1)}
+.brow .rt{text-align:right;font-size:13px;color:var(--ink-2)}
+.brow .rt b{color:var(--ink);font-size:14px}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{text-align:right;font:600 11px "IBM Plex Mono",monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--mute);padding:0 8px 8px;border-bottom:1.5px solid var(--ink);white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+td{padding:9px 8px;border-bottom:1px solid var(--line-2);text-align:right;white-space:nowrap}
+tr.clk{cursor:pointer}
+tr.clk:hover td{background:#F6F6F9}
+tr.sel td{background:#FFF3D6}
+td.co{font-weight:600}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.num{width:76px;border:1.5px solid var(--line);border-radius:10px;padding:6px 9px;font:600 13px "Golos Text",sans-serif;color:var(--ink);background:#fff}
+.num:focus{outline:2.5px solid var(--p1);outline-offset:1px}
+.ok{color:var(--ok);font-weight:600}
+.err{color:#C11414;font-weight:600}
+.tag{display:inline-block;font:600 11px "IBM Plex Mono",monospace;padding:2px 7px;border-radius:6px;background:var(--line-2);color:var(--ink-2)}
+.tag.d{background:#FFE3F0;color:var(--ct)}
+.tag.k{background:#E4E7FF;color:var(--p1)}
+svg{display:block;width:100%;height:auto;overflow:visible}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:12.5px;color:var(--ink-2);margin-top:12px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.big{font-family:"Unbounded",sans-serif;font-weight:800;letter-spacing:-.03em}
+.empty{color:var(--mute);font-size:13.5px;padding:8px 0}
+footer{color:var(--mute);font-size:12px;text-align:center;padding:6px 10px}
+@media (max-width:820px){
+  .kpis{grid-template-columns:repeat(2,1fr)}
+  .brow{grid-template-columns:88px 1fr;row-gap:4px}
+  .brow .rt{grid-column:1/-1;text-align:left}
+  h1{font-size:21px}
+  .card{padding:16px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="card">
+    <div class="head">
+      <div>
+        <div class="eyebrow">Коммерческие предложения и договоры</div>
+        <h1>Запросы, предложения, договоры</h1>
+        <div class="sub" id="period"></div>
+      </div>
+      <div class="eyebrow" id="stamp"></div>
+    </div>
+  </div>
+
+  <div class="card"><div class="kpis" id="kpis"></div></div>
+
+  <div class="card filters">
+    <div class="frow" id="prodChips"><span class="flab">Изделия</span></div>
+    <div class="frow" id="coChips"><span class="flab">Компания</span></div>
+  </div>
+
+  <div class="card">
+    <div class="cardhead"><h2>Что запрашивали</h2><span class="note" id="prodNote"></span></div>
+    <div class="bars" id="prodBars"></div>
+    <div class="scroll" style="margin-top:16px"><table id="prodTable"></table></div>
+  </div>
+
+  <div class="card">
+    <div class="cardhead"><h2>Кто запрашивал</h2><span class="note">нажмите на строку — весь отчёт перестроится</span></div>
+    <div class="bars" id="topBars"></div>
+    <div class="scroll" style="margin-top:16px"><table id="topTable"></table></div>
+  </div>
+
+  <div class="card">
+    <div class="cardhead"><h2>От запроса до договора</h2><span class="note" id="flowNote"></span></div>
+    <div id="flow"></div>
+  </div>
+
+  <div class="card">
+    <div class="cardhead"><h2>Договоры</h2><span class="note" id="ctNote"></span></div>
+    <div class="bars" id="ctBars"></div>
+    <div class="scroll" style="margin-top:16px;max-height:420px;overflow-y:auto"><table id="ctTable"></table></div>
+  </div>
+
+  <div class="card">
+    <div class="cardhead"><h2>Свои данные</h2><span class="note">CSV из Excel · файл никуда не уходит, всё считается в браузере</span></div>
+    <div class="frow">
+      <span class="flab">Шаблоны</span>
+      <button class="chip sm" type="button" id="tplKp">Скачать «КП.csv»</button>
+      <button class="chip sm" type="button" id="tplCt">Скачать «Договоры.csv»</button>
+    </div>
+    <div class="frow">
+      <span class="flab">Загрузить</span>
+      <label class="chip sm">Файл КП<input type="file" id="fileKp" accept=".csv" hidden></label>
+      <label class="chip sm">Файл договоров<input type="file" id="fileCt" accept=".csv" hidden></label>
+      <button class="chip sm" type="button" id="resetData">Вернуть демо-данные</button>
+    </div>
+    <div class="frow">
+      <span class="flab">Цена, млн ₽</span>
+      <span class="sub">Изд. 1</span><input class="num" id="pr0" type="number" step="0.1">
+      <span class="sub">2</span><input class="num" id="pr1" type="number" step="0.1">
+      <span class="sub">3</span><input class="num" id="pr2" type="number" step="0.1">
+      <span class="sub">4</span><input class="num" id="pr3" type="number" step="0.1">
+    </div>
+    <div class="empty" id="impStatus">Сейчас показаны демо-данные. Загрузите два файла — отчёт пересчитается.</div>
+  </div>
+
+  <footer id="foot"></footer>
+</div>
+
+<script>
+const D = {"period":"1 января — 30 июня 2026","months":["Январь","Февраль","Март","Апрель","Май","Июнь"],"prices":[29.0,44.0,46.0,0.4],"products":[{"n":"Изделие 1","p":29.0},{"n":"Изделие 2","p":44.0},{"n":"Изделие 3","p":46.0},{"n":"Изделие 4","p":0.4}],"companies":["Роснефть","Газпром","ЛУКОЙЛ","Росатом","СИБУР","РусГидро","Транснефть","НОВАТЭК","Норникель","Татнефть","Северсталь","ЕВРАЗ","Прочие организации"],"kp":[{"id":"КП-001","co":"Роснефть","m":0,"u":[18,2,0,3],"d":12},{"id":"КП-002","co":"Роснефть","m":5,"u":[6,0,0,0],"d":20},{"id":"КП-003","co":"Роснефть","m":1,"u":[11,8,2,0],"d":8},{"id":"КП-004","co":"Роснефть","m":5,"u":[5,5,0,0],"d":3},{"id":"КП-005","co":"Роснефть","m":4,"u":[8,0,0,7],"d":21},{"id":"КП-006","co":"Роснефть","m":2,"u":[10,0,0,0],"d":18},{"id":"КП-007","co":"Роснефть","m":0,"u":[6,3,0,0],"d":1},{"id":"КП-008","co":"Роснефть","m":5,"u":[12,0,0,0],"d":9},{"id":"КП-009","co":"Роснефть","m":1,"u":[13,0,2,3],"d":8},{"id":"КП-010","co":"Роснефть","m":3,"u":[7,3,0,11],"d":1},{"id":"КП-011","co":"Роснефть","m":1,"u":[14,0,0,8],"d":10},{"id":"КП-012","co":"Роснефть","m":0,"u":[6,0,3,0],"d":15},{"id":"КП-013","co":"Роснефть","m":4,"u":[3,3,0,0],"d":1},{"id":"КП-014","co":"Роснефть","m":1,"u":[24,8,0,0],"d":18},{"id":"КП-015","co":"Роснефть","m":0,"u":[12,0,2,0],"d":24},{"id":"КП-016","co":"Роснефть","m":4,"u":[9,0,0,0],"d":11},{"id":"КП-017","co":"Роснефть","m":1,"u":[9,8,0,0],"d":23},{"id":"КП-018","co":"Роснефть","m":2,"u":[8,0,0,15],"d":12},{"id":"КП-019","co":"Роснефть","m":1,"u":[18,3,0,0],"d":20},{"id":"КП-020","co":"Роснефть","m":3,"u":[12,5,3,0],"d":20},{"id":"КП-021","co":"Роснефть","m":2,"u":[21,5,0,0],"d":22},{"id":"КП-022","co":"Роснефть","m":3,"u":[15,9,0,6],"d":27},{"id":"КП-023","co":"Роснефть","m":4,"u":[4,0,0,0],"d":3},{"id":"КП-024","co":"Роснефть","m":0,"u":[5,6,3,0],"d":13},{"id":"КП-025","co":"Роснефть","m":4,"u":[6,4,0,0],"d":27},{"id":"КП-026","co":"Роснефть","m":2,"u":[10,0,0,0],"d":18},{"id":"КП-027","co":"Роснефть","m":3,"u":[4,9,1,3],"d":1},{"id":"КП-028","co":"Роснефть","m":2,"u":[10,0,0,2],"d":17},{"id":"КП-029","co":"Роснефть","m":1,"u":[12,0,0,3],"d":24},{"id":"КП-030","co":"Роснефть","m":2,"u":[13,0,2,0],"d":18},{"id":"КП-031","co":"Роснефть","m":2,"u":[13,0,0,0],"d":19},{"id":"КП-032","co":"Роснефть","m":5,"u":[9,3,0,0],"d":28},{"id":"КП-033","co":"Роснефть","m":5,"u":[8,3,0,0],"d":24},{"id":"КП-034","co":"Роснефть","m":3,"u":[6,3,0,0],"d":8},{"id":"КП-035","co":"Роснефть","m":1,"u":[4,0,0,0],"d":27},{"id":"КП-036","co":"Роснефть","m":5,"u":[18,0,0,0],"d":6},{"id":"КП-037","co":"Роснефть","m":0,"u":[12,0,0,2],"d":21},{"id":"КП-038","co":"Роснефть","m":2,"u":[8,6,5,5],"d":18},{"id":"КП-039","co":"Газпром","m":5,"u":[26,4,0,0],"d":28},{"id":"КП-040","co":"Газпром","m":0,"u":[8,7,0,0],"d":20},{"id":"КП-041","co":"Газпром","m":4,"u":[20,0,0,11],"d":1},{"id":"КП-042","co":"Газпром","m":4,"u":[4,10,0,0],"d":12},{"id":"КП-043","co":"Газпром","m":1,"u":[14,0,0,0],"d":1},{"id":"КП-044","co":"Газпром","m":3,"u":[10,0,0,3],"d":5},{"id":"КП-045","co":"Газпром","m":5,"u":[20,0,0,0],"d":22},{"id":"КП-046","co":"Газпром","m":4,"u":[7,9,0,2],"d":20},{"id":"КП-047","co":"Газпром","m":3,"u":[0,0,3,2],"d":26},{"id":"КП-048","co":"Газпром","m":1,"u":[4,0,0,3],"d":3},{"id":"КП-049","co":"Газпром","m":4,"u":[8,5,3,0],"d":28},{"id":"КП-050","co":"Газпром","m":5,"u":[11,3,0,0],"d":8},{"id":"КП-051","co":"Газпром","m":4,"u":[17,0,6,2],"d":8},{"id":"КП-052","co":"Газпром","m":1,"u":[8,0,0,2],"d":15},{"id":"КП-053","co":"Газпром","m":5,"u":[4,1,0,0],"d":24},{"id":"КП-054","co":"Газпром","m":4,"u":[8,0,0,0],"d":5},{"id":"КП-055","co":"Газпром","m":2,"u":[16,0,0,0],"d":24},{"id":"КП-056","co":"Газпром","m":3,"u":[13,4,4,0],"d":19},{"id":"КП-057","co":"Газпром","m":3,"u":[8,8,3,0],"d":7},{"id":"КП-058","co":"Газпром","m":2,"u":[6,7,0,2],"d":14},{"id":"КП-059","co":"Газпром","m":2,"u":[0,0,2,0],"d":24},{"id":"КП-060","co":"Газпром","m":0,"u":[5,5,0,19],"d":26},{"id":"КП-061","co":"Газпром","m":0,"u":[20,9,0,0],"d":1},{"id":"КП-062","co":"Газпром","m":3,"u":[4,2,1,4],"d":9},{"id":"КП-063","co":"Газпром","m":2,"u":[10,0,0,0],"d":10},{"id":"КП-064","co":"Газпром","m":5,"u":[7,8,0,0],"d":15},{"id":"КП-065","co":"Газпром","m":4,"u":[6,3,2,9],"d":15},{"id":"КП-066","co":"Газпром","m":4,"u":[7,2,7,0],"d":26},{"id":"КП-067","co":"Газпром","m":4,"u":[14,0,0,0],"d":26},{"id":"КП-068","co":"Газпром","m":3,"u":[4,0,4,0],"d":5},{"id":"КП-069","co":"Газпром","m":5,"u":[9,0,0,0],"d":24},{"id":"КП-070","co":"Газпром","m":0,"u":[12,4,0,2],"d":4},{"id":"КП-071","co":"Газпром","m":4,"u":[17,4,4,0],"d":16},{"id":"КП-072","co":"Газпром","m":2,"u":[28,0,0,2],"d":1},{"id":"КП-073","co":"ЛУКОЙЛ","m":0,"u":[10,0,0,4],"d":19},{"id":"КП-074","co":"ЛУКОЙЛ","m":3,"u":[0,3,2,5],"d":28},{"id":"КП-075","co":"ЛУКОЙЛ","m":4,"u":[9,0,0,0],"d":20},{"id":"КП-076","co":"ЛУКОЙЛ","m":2,"u":[11,0,2,2],"d":9},{"id":"КП-077","co":"ЛУКОЙЛ","m":3,"u":[4,3,0,0],"d":18},{"id":"КП-078","co":"ЛУКОЙЛ","m":2,"u":[13,0,0,0],"d":8},{"id":"КП-079","co":"ЛУКОЙЛ","m":4,"u":[17,3,0,0],"d":15},{"id":"КП-080","co":"ЛУКОЙЛ","m":0,"u":[16,4,0,0],"d":14},{"id":"КП-081","co":"ЛУКОЙЛ","m":4,"u":[11,0,0,9],"d":13},{"id":"КП-082","co":"ЛУКОЙЛ","m":3,"u":[5,0,0,0],"d":24},{"id":"КП-083","co":"ЛУКОЙЛ","m":4,"u":[12,3,0,0],"d":3},{"id":"КП-084","co":"ЛУКОЙЛ","m":5,"u":[9,0,0,0],"d":15},{"id":"КП-085","co":"ЛУКОЙЛ","m":5,"u":[4,0,0,3],"d":3},{"id":"КП-086","co":"ЛУКОЙЛ","m":1,"u":[9,0,0,0],"d":25},{"id":"КП-087","co":"ЛУКОЙЛ","m":0,"u":[8,0,0,2],"d":17},{"id":"КП-088","co":"ЛУКОЙЛ","m":0,"u":[5,6,0,4],"d":1},{"id":"КП-089","co":"ЛУКОЙЛ","m":4,"u":[9,0,2,0],"d":10},{"id":"КП-090","co":"ЛУКОЙЛ","m":2,"u":[9,0,0,0],"d":15},{"id":"КП-091","co":"ЛУКОЙЛ","m":3,"u":[2,0,0,0],"d":2},{"id":"КП-092","co":"ЛУКОЙЛ","m":5,"u":[9,0,0,4],"d":19},{"id":"КП-093","co":"ЛУКОЙЛ","m":5,"u":[0,0,3,0],"d":7},{"id":"КП-094","co":"ЛУКОЙЛ","m":4,"u":[4,8,0,0],"d":2},{"id":"КП-095","co":"ЛУКОЙЛ","m":5,"u":[4,6,2,0],"d":18},{"id":"КП-096","co":"ЛУКОЙЛ","m":4,"u":[5,8,0,0],"d":21},{"id":"КП-097","co":"ЛУКОЙЛ","m":1,"u":[4,0,0,2],"d":19},{"id":"КП-098","co":"ЛУКОЙЛ","m":3,"u":[10,1,0,0],"d":23},{"id":"КП-099","co":"ЛУКОЙЛ","m":4,"u":[13,0,0,15],"d":18},{"id":"КП-100","co":"ЛУКОЙЛ","m":5,"u":[11,0,0,0],"d":15},{"id":"КП-101","co":"ЛУКОЙЛ","m":2,"u":[11,3,4,0],"d":1},{"id":"КП-102","co":"Росатом","m":2,"u":[6,5,1,0],"d":23},{"id":"КП-103","co":"Росатом","m":4,"u":[8,3,0,3],"d":2},{"id":"КП-104","co":"Росатом","m":5,"u":[5,2,0,0],"d":5},{"id":"КП-105","co":"Росатом","m":0,"u":[6,2,1,2],"d":20},{"id":"КП-106","co":"Росатом","m":0,"u":[5,9,0,2],"d":27},{"id":"КП-107","co":"Росатом","m":3,"u":[7,1,0,6],"d":16},{"id":"КП-108","co":"Росатом","m":4,"u":[3,3,0,0],"d":25},{"id":"КП-109","co":"Росатом","m":2,"u":[0,0,1,0],"d":23},{"id":"КП-110","co":"Росатом","m":0,"u":[0,10,2,2],"d":24},{"id":"КП-111","co":"Росатом","m":3,"u":[10,0,0,3],"d":25},{"id":"КП-112","co":"Росатом","m":4,"u":[6,0,2,2],"d":2},{"id":"КП-113","co":"Росатом","m":2,"u":[8,0,0,0],"d":9},{"id":"КП-114","co":"Росатом","m":3,"u":[10,0,1,0],"d":14},{"id":"КП-115","co":"Росатом","m":4,"u":[8,0,0,0],"d":8},{"id":"КП-116","co":"Росатом","m":0,"u":[11,0,0,0],"d":16},{"id":"КП-117","co":"Росатом","m":3,"u":[0,0,1,0],"d":22},{"id":"КП-118","co":"Росатом","m":2,"u":[4,3,1,0],"d":2},{"id":"КП-119","co":"Росатом","m":2,"u":[5,3,0,0],"d":19},{"id":"КП-120","co":"Росатом","m":2,"u":[4,0,2,0],"d":10},{"id":"КП-121","co":"Росатом","m":1,"u":[4,6,2,0],"d":23},{"id":"КП-122","co":"Росатом","m":1,"u":[3,5,3,0],"d":23},{"id":"КП-123","co":"Росатом","m":1,"u":[4,0,0,0],"d":17},{"id":"КП-124","co":"Росатом","m":0,"u":[3,3,3,0],"d":24},{"id":"КП-125","co":"Росатом","m":5,"u":[4,5,0,0],"d":6},{"id":"КП-126","co":"Росатом","m":0,"u":[4,0,0,0],"d":27},{"id":"КП-127","co":"СИБУР","m":4,"u":[13,0,0,0],"d":10},{"id":"КП-128","co":"СИБУР","m":5,"u":[4,4,2,3],"d":16},{"id":"КП-129","co":"СИБУР","m":1,"u":[4,3,0,3],"d":25},{"id":"КП-130","co":"СИБУР","m":2,"u":[4,3,0,0],"d":25},{"id":"КП-131","co":"СИБУР","m":2,"u":[3,0,0,6],"d":21},{"id":"КП-132","co":"СИБУР","m":5,"u":[11,0,2,0],"d":16},{"id":"КП-133","co":"СИБУР","m":0,"u":[4,0,0,0],"d":19},{"id":"КП-134","co":"СИБУР","m":1,"u":[5,0,3,2],"d":5},{"id":"КП-135","co":"СИБУР","m":1,"u":[6,0,0,0],"d":5},{"id":"КП-136","co":"СИБУР","m":5,"u":[4,0,0,3],"d":19},{"id":"КП-137","co":"СИБУР","m":4,"u":[7,3,1,0],"d":10},{"id":"КП-138","co":"СИБУР","m":4,"u":[13,3,0,0],"d":18},{"id":"КП-139","co":"СИБУР","m":5,"u":[0,3,0,0],"d":4},{"id":"КП-140","co":"СИБУР","m":1,"u":[0,0,0,2],"d":4},{"id":"КП-141","co":"СИБУР","m":0,"u":[3,0,0,0],"d":15},{"id":"КП-142","co":"СИБУР","m":3,"u":[4,3,2,0],"d":13},{"id":"КП-143","co":"СИБУР","m":4,"u":[0,2,1,0],"d":19},{"id":"КП-144","co":"СИБУР","m":5,"u":[19,0,0,0],"d":25},{"id":"КП-145","co":"СИБУР","m":0,"u":[8,0,0,0],"d":3},{"id":"КП-146","co":"СИБУР","m":1,"u":[4,0,0,0],"d":19},{"id":"КП-147","co":"СИБУР","m":0,"u":[5,0,0,0],"d":9},{"id":"КП-148","co":"СИБУР","m":1,"u":[0,0,0,2],"d":16},{"id":"КП-149","co":"РусГидро","m":2,"u":[4,0,0,3],"d":28},{"id":"КП-150","co":"РусГидро","m":0,"u":[4,0,4,0],"d":28},{"id":"КП-151","co":"РусГидро","m":4,"u":[3,0,0,2],"d":4},{"id":"КП-152","co":"РусГидро","m":3,"u":[7,9,0,0],"d":1},{"id":"КП-153","co":"РусГидро","m":1,"u":[3,0,0,0],"d":24},{"id":"КП-154","co":"РусГидро","m":5,"u":[3,0,0,2],"d":20},{"id":"КП-155","co":"РусГидро","m":3,"u":[5,0,0,0],"d":4},{"id":"КП-156","co":"РусГидро","m":3,"u":[3,0,0,2],"d":26},{"id":"КП-157","co":"РусГидро","m":0,"u":[6,0,0,0],"d":9},{"id":"КП-158","co":"РусГидро","m":4,"u":[5,0,0,0],"d":10},{"id":"КП-159","co":"РусГидро","m":3,"u":[9,0,0,0],"d":16},{"id":"КП-160","co":"РусГидро","m":3,"u":[4,0,0,0],"d":8},{"id":"КП-161","co":"РусГидро","m":5,"u":[12,0,0,2],"d":17},{"id":"КП-162","co":"РусГидро","m":5,"u":[0,2,0,0],"d":26},{"id":"КП-163","co":"РусГидро","m":1,"u":[2,8,0,0],"d":13},{"id":"КП-164","co":"РусГидро","m":2,"u":[3,0,0,0],"d":22},{"id":"КП-165","co":"РусГидро","m":5,"u":[3,0,0,0],"d":21},{"id":"КП-166","co":"РусГидро","m":5,"u":[5,0,6,3],"d":23},{"id":"КП-167","co":"РусГидро","m":4,"u":[0,0,0,2],"d":12},{"id":"КП-168","co":"Транснефть","m":0,"u":[3,3,0,0],"d":26},{"id":"КП-169","co":"Транснефть","m":2,"u":[5,0,0,0],"d":4},{"id":"КП-170","co":"Транснефть","m":3,"u":[2,0,0,0],"d":11},{"id":"КП-171","co":"Транснефть","m":1,"u":[5,1,0,0],"d":28},{"id":"КП-172","co":"Транснефть","m":2,"u":[13,0,0,0],"d":12},{"id":"КП-173","co":"Транснефть","m":4,"u":[4,4,0,2],"d":18},{"id":"КП-174","co":"Транснефть","m":4,"u":[10,0,0,2],"d":28},{"id":"КП-175","co":"Транснефть","m":0,"u":[4,0,0,0],"d":19},{"id":"КП-176","co":"Транснефть","m":3,"u":[5,4,0,0],"d":17},{"id":"КП-177","co":"Транснефть","m":2,"u":[8,3,0,3],"d":17},{"id":"КП-178","co":"Транснефть","m":2,"u":[8,3,0,0],"d":7},{"id":"КП-179","co":"Транснефть","m":0,"u":[7,5,2,0],"d":5},{"id":"КП-180","co":"Транснефть","m":1,"u":[6,2,0,0],"d":27},{"id":"КП-181","co":"Транснефть","m":1,"u":[52,3,2,0],"d":19},{"id":"КП-182","co":"Транснефть","m":1,"u":[4,0,0,0],"d":28},{"id":"КП-183","co":"Транснефть","m":1,"u":[0,0,0,9],"d":22},{"id":"КП-184","co":"Транснефть","m":4,"u":[10,0,0,3],"d":26},{"id":"КП-185","co":"НОВАТЭК","m":2,"u":[6,0,0,0],"d":27},{"id":"КП-186","co":"НОВАТЭК","m":1,"u":[4,0,0,0],"d":26},{"id":"КП-187","co":"НОВАТЭК","m":0,"u":[4,0,0,0],"d":28},{"id":"КП-188","co":"НОВАТЭК","m":0,"u":[0,0,0,2],"d":12},{"id":"КП-189","co":"НОВАТЭК","m":0,"u":[11,0,0,0],"d":12},{"id":"КП-190","co":"НОВАТЭК","m":0,"u":[8,3,0,0],"d":24},{"id":"КП-191","co":"НОВАТЭК","m":4,"u":[3,0,0,0],"d":4},{"id":"КП-192","co":"НОВАТЭК","m":3,"u":[6,3,0,0],"d":6},{"id":"КП-193","co":"НОВАТЭК","m":4,"u":[2,0,0,0],"d":9},{"id":"КП-194","co":"НОВАТЭК","m":0,"u":[0,6,0,0],"d":9},{"id":"КП-195","co":"НОВАТЭК","m":3,"u":[10,2,0,0],"d":28},{"id":"КП-196","co":"НОВАТЭК","m":0,"u":[5,0,0,3],"d":23},{"id":"КП-197","co":"НОВАТЭК","m":2,"u":[3,3,0,0],"d":26},{"id":"КП-198","co":"НОВАТЭК","m":2,"u":[6,2,0,4],"d":27},{"id":"КП-199","co":"НОВАТЭК","m":2,"u":[3,0,0,0],"d":28},{"id":"КП-200","co":"Норникель","m":4,"u":[3,0,0,0],"d":13},{"id":"КП-201","co":"Норникель","m":4,"u":[0,0,0,3],"d":26},{"id":"КП-202","co":"Норникель","m":1,"u":[3,0,0,0],"d":16},{"id":"КП-203","co":"Норникель","m":5,"u":[7,0,0,0],"d":5},{"id":"КП-204","co":"Норникель","m":2,"u":[4,0,0,0],"d":12},{"id":"КП-205","co":"Норникель","m":4,"u":[4,0,0,0],"d":6},{"id":"КП-206","co":"Норникель","m":3,"u":[11,2,0,2],"d":9},{"id":"КП-207","co":"Норникель","m":1,"u":[4,0,0,11],"d":27},{"id":"КП-208","co":"Норникель","m":5,"u":[7,0,0,2],"d":18},{"id":"КП-209","co":"Норникель","m":1,"u":[4,2,0,0],"d":20},{"id":"КП-210","co":"Норникель","m":0,"u":[4,0,0,0],"d":28},{"id":"КП-211","co":"Норникель","m":3,"u":[7,0,0,2],"d":4},{"id":"КП-212","co":"Норникель","m":5,"u":[0,1,1,0],"d":24},{"id":"КП-213","co":"Татнефть","m":1,"u":[12,0,0,2],"d":26},{"id":"КП-214","co":"Татнефть","m":4,"u":[3,0,0,0],"d":27},{"id":"КП-215","co":"Татнефть","m":5,"u":[4,2,0,0],"d":5},{"id":"КП-216","co":"Татнефть","m":1,"u":[5,2,0,0],"d":14},{"id":"КП-217","co":"Татнефть","m":5,"u":[6,0,0,4],"d":3},{"id":"КП-218","co":"Татнефть","m":5,"u":[4,0,0,12],"d":13},{"id":"КП-219","co":"Татнефть","m":4,"u":[6,0,0,0],"d":23},{"id":"КП-220","co":"Татнефть","m":5,"u":[10,1,0,0],"d":12},{"id":"КП-221","co":"Татнефть","m":4,"u":[8,0,0,0],"d":11},{"id":"КП-222","co":"Татнефть","m":5,"u":[4,0,0,0],"d":25},{"id":"КП-223","co":"Татнефть","m":4,"u":[3,0,0,0],"d":26},{"id":"КП-224","co":"Северсталь","m":0,"u":[4,0,0,0],"d":15},{"id":"КП-225","co":"Северсталь","m":0,"u":[0,0,1,0],"d":2},{"id":"КП-226","co":"Северсталь","m":5,"u":[5,0,0,0],"d":13},{"id":"КП-227","co":"Северсталь","m":4,"u":[3,0,3,0],"d":1},{"id":"КП-228","co":"Северсталь","m":5,"u":[2,0,0,0],"d":3},{"id":"КП-229","co":"Северсталь","m":5,"u":[4,0,0,0],"d":2},{"id":"КП-230","co":"Северсталь","m":5,"u":[4,0,0,0],"d":14},{"id":"КП-231","co":"Северсталь","m":0,"u":[7,0,0,0],"d":23},{"id":"КП-232","co":"Северсталь","m":1,"u":[6,2,0,0],"d":6},{"id":"КП-233","co":"ЕВРАЗ","m":4,"u":[6,0,1,0],"d":6},{"id":"КП-234","co":"ЕВРАЗ","m":4,"u":[4,0,0,0],"d":16},{"id":"КП-235","co":"ЕВРАЗ","m":4,"u":[2,0,0,0],"d":3},{"id":"КП-236","co":"ЕВРАЗ","m":2,"u":[7,0,0,0],"d":12},{"id":"КП-237","co":"ЕВРАЗ","m":2,"u":[2,0,0,0],"d":28},{"id":"КП-238","co":"ЕВРАЗ","m":3,"u":[7,0,1,0],"d":25},{"id":"КП-239","co":"ЕВРАЗ","m":3,"u":[9,2,0,0],"d":23},{"id":"КП-240","co":"ЕВРАЗ","m":1,"u":[3,0,0,0],"d":27},{"id":"КП-241","co":"Прочие организации","m":2,"u":[3,1,0,0],"d":20},{"id":"КП-242","co":"Прочие организации","m":1,"u":[5,0,0,0],"d":14},{"id":"КП-243","co":"Прочие организации","m":1,"u":[4,3,0,0],"d":2},{"id":"КП-244","co":"Прочие организации","m":5,"u":[4,0,0,2],"d":16},{"id":"КП-245","co":"Прочие организации","m":5,"u":[3,0,0,0],"d":9},{"id":"КП-246","co":"Прочие организации","m":5,"u":[4,0,0,0],"d":5},{"id":"КП-247","co":"Прочие организации","m":5,"u":[0,0,0,5],"d":25},{"id":"КП-248","co":"Прочие организации","m":2,"u":[2,0,0,0],"d":15},{"id":"КП-249","co":"Прочие организации","m":4,"u":[12,3,0,0],"d":9},{"id":"КП-250","co":"Прочие организации","m":3,"u":[3,0,0,0],"d":5},{"id":"КП-251","co":"Прочие организации","m":4,"u":[0,0,1,0],"d":18},{"id":"КП-252","co":"Прочие организации","m":3,"u":[4,0,1,0],"d":23},{"id":"КП-253","co":"Прочие организации","m":4,"u":[3,0,0,4],"d":8},{"id":"КП-254","co":"Прочие организации","m":5,"u":[0,1,1,0],"d":25},{"id":"КП-255","co":"Прочие организации","m":3,"u":[0,0,0,2],"d":24},{"id":"КП-256","co":"Прочие организации","m":3,"u":[2,0,0,0],"d":23},{"id":"КП-257","co":"Прочие организации","m":3,"u":[0,0,1,2],"d":18},{"id":"КП-258","co":"Прочие организации","m":0,"u":[3,0,0,0],"d":27},{"id":"КП-259","co":"Прочие организации","m":5,"u":[5,1,0,0],"d":18},{"id":"КП-260","co":"Прочие организации","m":5,"u":[2,0,0,0],"d":9},{"id":"КП-261","co":"Прочие организации","m":1,"u":[4,0,1,0],"d":6},{"id":"КП-262","co":"Прочие организации","m":3,"u":[0,0,0,1],"d":27},{"id":"КП-263","co":"Прочие организации","m":2,"u":[2,0,0,0],"d":21},{"id":"КП-264","co":"Прочие организации","m":0,"u":[4,0,0,2],"d":2},{"id":"КП-265","co":"Прочие организации","m":5,"u":[2,0,0,0],"d":13},{"id":"КП-266","co":"Прочие организации","m":3,"u":[2,0,0,0],"d":13},{"id":"КП-267","co":"Прочие организации","m":4,"u":[2,0,0,0],"d":9},{"id":"КП-268","co":"Прочие организации","m":4,"u":[4,3,0,2],"d":1},{"id":"КП-269","co":"Прочие организации","m":0,"u":[2,0,0,0],"d":15},{"id":"КП-270","co":"Прочие организации","m":5,"u":[0,0,0,2],"d":28},{"id":"КП-271","co":"Прочие организации","m":2,"u":[4,0,0,2],"d":12},{"id":"КП-272","co":"Прочие организации","m":5,"u":[0,3,0,0],"d":25},{"id":"КП-273","co":"Прочие организации","m":1,"u":[0,0,0,4],"d":6},{"id":"КП-274","co":"Прочие организации","m":3,"u":[4,3,0,2],"d":6},{"id":"КП-275","co":"Прочие организации","m":0,"u":[6,0,0,2],"d":24},{"id":"КП-276","co":"Прочие организации","m":5,"u":[2,0,0,0],"d":9},{"id":"КП-277","co":"Прочие организации","m":2,"u":[2,0,0,0],"d":27},{"id":"КП-278","co":"Прочие организации","m":5,"u":[0,0,0,1],"d":19},{"id":"КП-279","co":"Прочие организации","m":3,"u":[2,0,0,0],"d":5},{"id":"КП-280","co":"Прочие организации","m":1,"u":[2,0,0,0],"d":27},{"id":"КП-281","co":"Прочие организации","m":4,"u":[0,2,0,1],"d":6},{"id":"КП-282","co":"Прочие организации","m":3,"u":[5,0,0,0],"d":15},{"id":"КП-283","co":"Прочие организации","m":2,"u":[3,0,0,2],"d":8},{"id":"КП-284","co":"Прочие организации","m":1,"u":[0,2,1,0],"d":10}],"ct":[{"id":"Д-2026-001","co":"Роснефть","m":0,"u":[3,3,0,2],"src":null,"d":3},{"id":"Д-2026-002","co":"Роснефть","m":0,"u":[11,1,0,0],"src":null,"d":5},{"id":"Д-2026-003","co":"ЕВРАЗ","m":0,"u":[1,0,0,1],"src":null,"d":6},{"id":"Д-2026-004","co":"Транснефть","m":0,"u":[6,1,0,0],"src":null,"d":8},{"id":"Д-2026-005","co":"РусГидро","m":0,"u":[0,0,0,2],"src":null,"d":10},{"id":"Д-2026-006","co":"ЕВРАЗ","m":0,"u":[3,1,0,1],"src":null,"d":14},{"id":"Д-2026-007","co":"Газпром","m":0,"u":[8,0,1,0],"src":null,"d":19},{"id":"Д-2026-008","co":"ЕВРАЗ","m":0,"u":[1,0,0,2],"src":null,"d":21},{"id":"Д-2026-009","co":"НОВАТЭК","m":0,"u":[5,0,1,0],"src":null,"d":24},{"id":"Д-2026-010","co":"Росатом","m":0,"u":[5,0,0,0],"src":null,"d":24},{"id":"Д-2026-011","co":"Роснефть","m":0,"u":[3,0,0,3],"src":null,"d":24},{"id":"Д-2026-012","co":"Роснефть","m":0,"u":[8,3,0,0],"src":null,"d":27},{"id":"Д-2026-013","co":"Прочие организации","m":1,"u":[1,1,0,1],"src":null,"d":2},{"id":"Д-2026-014","co":"РусГидро","m":1,"u":[2,0,0,0],"src":null,"d":2},{"id":"Д-2026-015","co":"Роснефть","m":1,"u":[7,0,1,0],"src":"КП-009","d":9},{"id":"Д-2026-016","co":"Росатом","m":1,"u":[7,0,0,0],"src":"КП-116","d":10},{"id":"Д-2026-017","co":"Транснефть","m":1,"u":[2,0,0,0],"src":null,"d":24},{"id":"Д-2026-018","co":"Прочие организации","m":1,"u":[2,0,0,0],"src":null,"d":25},{"id":"Д-2026-019","co":"Газпром","m":2,"u":[8,0,1,0],"src":null,"d":4},{"id":"Д-2026-020","co":"Роснефть","m":2,"u":[3,0,0,0],"src":null,"d":5},{"id":"Д-2026-021","co":"Роснефть","m":2,"u":[10,1,0,0],"src":"КП-001","d":6},{"id":"Д-2026-022","co":"Росатом","m":2,"u":[5,0,0,0],"src":null,"d":6},{"id":"Д-2026-023","co":"Роснефть","m":2,"u":[5,4,2,3],"src":"КП-038","d":9},{"id":"Д-2026-024","co":"Роснефть","m":2,"u":[0,0,1,0],"src":"КП-012","d":12},{"id":"Д-2026-025","co":"РусГидро","m":2,"u":[2,0,1,0],"src":"КП-150","d":12},{"id":"Д-2026-026","co":"Роснефть","m":2,"u":[2,0,0,0],"src":"КП-035","d":18},{"id":"Д-2026-027","co":"Газпром","m":2,"u":[15,2,0,0],"src":null,"d":19},{"id":"Д-2026-028","co":"Прочие организации","m":2,"u":[1,0,1,1],"src":null,"d":26},{"id":"Д-2026-029","co":"Прочие организации","m":2,"u":[1,0,0,0],"src":null,"d":28},{"id":"Д-2026-030","co":"СИБУР","m":2,"u":[2,0,0,0],"src":null,"d":28},{"id":"Д-2026-031","co":"Росатом","m":3,"u":[4,2,0,5],"src":null,"d":6},{"id":"Д-2026-032","co":"Роснефть","m":3,"u":[6,0,0,2],"src":null,"d":9},{"id":"Д-2026-033","co":"Прочие организации","m":3,"u":[3,0,0,2],"src":null,"d":9},{"id":"Д-2026-034","co":"ЛУКОЙЛ","m":3,"u":[1,0,0,0],"src":"КП-091","d":11},{"id":"Д-2026-035","co":"СИБУР","m":3,"u":[3,1,0,0],"src":null,"d":11},{"id":"Д-2026-036","co":"Роснефть","m":3,"u":[5,0,0,0],"src":null,"d":11},{"id":"Д-2026-037","co":"Газпром","m":3,"u":[3,0,2,0],"src":"КП-068","d":14},{"id":"Д-2026-038","co":"Прочие организации","m":3,"u":[1,0,0,2],"src":null,"d":14},{"id":"Д-2026-039","co":"Росатом","m":3,"u":[0,2,0,3],"src":null,"d":21},{"id":"Д-2026-040","co":"Роснефть","m":3,"u":[4,0,0,2],"src":null,"d":25},{"id":"Д-2026-041","co":"Транснефть","m":4,"u":[4,2,0,1],"src":null,"d":3},{"id":"Д-2026-042","co":"РусГидро","m":4,"u":[3,0,0,0],"src":null,"d":7},{"id":"Д-2026-043","co":"Росатом","m":4,"u":[2,3,2,0],"src":"КП-122","d":8},{"id":"Д-2026-044","co":"Транснефть","m":4,"u":[9,1,0,0],"src":null,"d":13},{"id":"Д-2026-045","co":"Роснефть","m":4,"u":[3,0,1,0],"src":null,"d":14},{"id":"Д-2026-046","co":"Прочие организации","m":4,"u":[3,0,0,1],"src":null,"d":18},{"id":"Д-2026-047","co":"ЛУКОЙЛ","m":4,"u":[2,0,0,0],"src":"КП-090","d":20},{"id":"Д-2026-048","co":"Газпром","m":4,"u":[6,0,0,1],"src":null,"d":21},{"id":"Д-2026-049","co":"Газпром","m":4,"u":[0,3,0,2],"src":null,"d":25},{"id":"Д-2026-050","co":"Норникель","m":5,"u":[4,0,0,0],"src":"КП-203","d":3},{"id":"Д-2026-051","co":"Роснефть","m":5,"u":[6,0,0,0],"src":"КП-016","d":4},{"id":"Д-2026-052","co":"Газпром","m":5,"u":[4,2,2,0],"src":"КП-049","d":5},{"id":"Д-2026-053","co":"Норникель","m":5,"u":[3,0,0,2],"src":null,"d":8},{"id":"Д-2026-054","co":"Прочие организации","m":5,"u":[3,0,0,0],"src":null,"d":12},{"id":"Д-2026-055","co":"Роснефть","m":5,"u":[3,1,0,0],"src":"КП-034","d":13},{"id":"Д-2026-056","co":"Северсталь","m":5,"u":[1,0,1,0],"src":"КП-227","d":15},{"id":"Д-2026-057","co":"РусГидро","m":5,"u":[2,0,0,0],"src":null,"d":15},{"id":"Д-2026-058","co":"Транснефть","m":5,"u":[0,2,0,1],"src":"КП-173","d":18},{"id":"Д-2026-059","co":"Росатом","m":5,"u":[4,1,0,2],"src":"КП-103","d":19},{"id":"Д-2026-060","co":"НОВАТЭК","m":5,"u":[1,0,0,0],"src":"КП-191","d":20},{"id":"Д-2026-061","co":"СИБУР","m":5,"u":[1,0,0,0],"src":null,"d":20},{"id":"Д-2026-062","co":"Прочие организации","m":5,"u":[2,0,0,1],"src":"КП-253","d":21},{"id":"Д-2026-063","co":"Прочие организации","m":5,"u":[2,0,0,0],"src":null,"d":21},{"id":"Д-2026-064","co":"Газпром","m":5,"u":[5,1,4,0],"src":"КП-066","d":22},{"id":"Д-2026-065","co":"РусГидро","m":5,"u":[6,0,0,0],"src":null,"d":23},{"id":"Д-2026-066","co":"Газпром","m":5,"u":[7,0,0,0],"src":null,"d":24},{"id":"Д-2026-067","co":"Северсталь","m":5,"u":[1,0,0,0],"src":"КП-230","d":25},{"id":"Д-2026-068","co":"СИБУР","m":5,"u":[5,1,0,0],"src":"КП-138","d":28},{"id":"Д-2026-069","co":"Росатом","m":5,"u":[2,0,0,2],"src":null,"d":28}]};
+const PC = ['var(--p1)','var(--p2)','var(--p3)','var(--p4)'];
+const HEX = ['#2438FF','#FF4D00','#0B7A4B','#F5B301'];
+let selP = [0,1,2,3];
+let selCo = null;
+
+const nf = n => new Intl.NumberFormat('ru-RU').format(Math.round(n));
+const money = m => m >= 1000 ? (m/1000).toFixed(1).replace('.',',') + ' млрд ₽' : nf(m) + ' млн ₽';
+const pct = (a,b) => b ? Math.round(a/b*100) + '%' : '0%';
+const dt = r => String(r.d).padStart(2,'0') + '.' + String(r.m+1).padStart(2,'0') + '.26';
+
+const hasSel = r => selP.some(t => r.u[t] > 0);
+const units = r => selP.reduce((s,t) => s + r.u[t], 0);
+const value = r => selP.reduce((s,t) => s + r.u[t]*D.prices[t], 0);
+const kpAll = () => D.kp.filter(k => hasSel(k));
+const ctAll = () => D.ct.filter(c => hasSel(c));
+const kpSel = () => kpAll().filter(k => !selCo || k.co === selCo);
+const ctSel = () => ctAll().filter(c => !selCo || c.co === selCo);
+const sum = (a,f) => a.reduce((s,x) => s + f(x), 0);
+
+/* ---------- фильтры ---------- */
+function buildChips(){
+  const p = document.getElementById('prodChips');
+  D.products.forEach((pr,i) => {
+    const b = document.createElement('button');
+    b.className = 'chip c'+(i+1); b.type='button';
+    b.innerHTML = '<i class="dot"></i>' + pr.n;
+    b.onclick = () => {
+      if(selP.includes(i)) selP = selP.filter(x => x !== i); else selP = [...selP, i].sort();
+      if(!selP.length) selP = [0,1,2,3];
+      render();
+    };
+    b.dataset.i = i; p.appendChild(b);
+  });
+  buildCoChips();
+}
+function buildCoChips(){
+  const c = document.getElementById('coChips');
+  c.innerHTML = '<span class="flab">Компания</span>';
+  const all = document.createElement('button');
+  all.className='chip sm'; all.type='button'; all.textContent='Все'; all.dataset.co='';
+  all.onclick = () => { selCo = null; render(); };
+  c.appendChild(all);
+  D.companies.forEach(name => {
+    const b = document.createElement('button');
+    b.className='chip sm'; b.type='button'; b.textContent = name; b.dataset.co = name;
+    b.onclick = () => { selCo = (selCo === name) ? null : name; render(); };
+    c.appendChild(b);
+  });
+}
+function paintChips(){
+  document.querySelectorAll('#prodChips .chip').forEach(b => b.classList.toggle('on', selP.includes(+b.dataset.i)));
+  document.querySelectorAll('#coChips .chip').forEach(b => b.classList.toggle('on', (b.dataset.co||null) === selCo));
+}
+
+/* ---------- KPI ---------- */
+function renderKpi(){
+  const kp = kpSel(), ct = ctSel();
+  const kpV = sum(kp,value), ctV = sum(ct,value);
+  const linked = new Set(ct.filter(c => c.src).map(c => c.src));
+  const conv = kp.filter(k => linked.has(k.id)).length;
+  const tiles = [
+    ['Направлено КП', nf(kp.length), 'предложений'],
+    ['Изделий в запросах', nf(sum(kp,units)), 'шт.'],
+    ['Сумма по КП', money(kpV), '', true],
+    ['Заключено договоров', nf(ct.length), 'на ' + money(ctV)],
+    ['Конверсия', pct(conv, kp.length), 'КП → договор']
+  ];
+  document.getElementById('kpis').innerHTML = tiles.map(t =>
+    `<div class="kpi${t[3]?' hi':''}"><div class="lab">${t[0]}</div><div class="val">${t[1]}${t[2]?' <small>'+t[2]+'</small>':''}</div></div>`).join('');
+}
+
+/* ---------- изделия ---------- */
+function renderProducts(){
+  const kp = kpSel();
+  const rows = selP.map(t => {
+    const q = sum(kp, k => k.u[t]);
+    const inKp = kp.filter(k => k.u[t] > 0).length;
+    return {t, q, v: q*D.prices[t], inKp};
+  });
+  const maxV = Math.max(...rows.map(r => r.v), 1);
+  document.getElementById('prodBars').innerHTML = rows.map(r => `
+    <div class="brow">
+      <div class="nm"><i class="sw" style="background:${PC[r.t]}"></i>${D.products[r.t].n}</div>
+      <div class="track"><div class="fill" style="width:${Math.max(r.v/maxV*100,1.2)}%;background:${PC[r.t]}"></div></div>
+      <div class="rt"><b>${money(r.v)}</b> · ${nf(r.q)} шт.</div>
+    </div>`).join('');
+  const totV = sum(rows, r => r.v);
+  document.getElementById('prodTable').innerHTML =
+    `<thead><tr><th>Изделие</th><th>Цена</th><th>Шт. в запросах</th><th>В скольких КП</th><th>Сумма</th><th>Доля суммы</th></tr></thead><tbody>` +
+    rows.map(r => `<tr><td class="co"><i class="sw" style="display:inline-block;background:${PC[r.t]};margin-right:7px"></i>${D.products[r.t].n}</td>
+      <td>${D.prices[r.t] >= 1 ? nf(D.prices[r.t])+' млн' : '0,4 млн'}</td><td>${nf(r.q)}</td><td>${nf(r.inKp)}</td>
+      <td><b>${money(r.v)}</b></td><td>${pct(r.v, totV)}</td></tr>`).join('') +
+    `<tr><td class="co">Итого</td><td></td><td><b>${nf(sum(rows,r=>r.q))}</b></td><td><b>${nf(kp.length)}</b></td><td><b>${money(totV)}</b></td><td>100%</td></tr></tbody>`;
+  document.getElementById('prodNote').textContent = selCo ? selCo : 'все организации';
+}
+
+/* ---------- компании ---------- */
+function agg(){
+  const kp = kpAll(), ct = ctAll();
+  const linked = new Set(ct.filter(c => c.src).map(c => c.src));
+  return D.companies.map(co => {
+    const k = kp.filter(x => x.co === co), c = ct.filter(x => x.co === co);
+    return {
+      co, kp: k.length, kpV: sum(k, value), q: selP.map(t => sum(k, x => x.u[t])),
+      ct: c.length, ctV: sum(c, value), direct: c.filter(x => !x.src).length,
+      won: k.filter(x => linked.has(x.id)).length
+    };
+  }).sort((a,b) => b.kp - a.kp || b.kpV - a.kpV);
+}
+function renderTop(){
+  const rows = agg();
+  const maxV = Math.max(...rows.map(r => r.kpV), 1);
+  document.getElementById('topBars').innerHTML = rows.map(r => `
+    <div class="brow" style="opacity:${!selCo || selCo===r.co ? 1 : .35}">
+      <div class="nm">${r.co}</div>
+      <div class="track" style="position:relative">
+        <div class="fill" style="width:${Math.max(r.kpV/maxV*100,1)}%;background:#0B0D12"></div>
+        <div class="fill" style="width:${Math.max(r.ctV/maxV*100,0)}%;background:var(--ct);position:absolute;left:0;top:0;height:100%;opacity:.92"></div>
+      </div>
+      <div class="rt"><b>${r.kp} КП</b> · ${money(r.kpV)}</div>
+    </div>`).join('');
+  document.getElementById('topTable').innerHTML =
+    `<thead><tr><th>Организация</th><th>КП</th>` + selP.map(t => `<th>Изд. ${t+1}, шт.</th>`).join('') +
+    `<th>Сумма КП</th><th>Договоров</th><th>Сумма договоров</th><th>Конверсия</th></tr></thead><tbody>` +
+    rows.map(r => `<tr class="clk${selCo===r.co?' sel':''}" data-co="${r.co}"><td class="co">${r.co}</td><td>${r.kp}</td>` +
+      r.q.map(q => `<td>${q ? nf(q) : '—'}</td>`).join('') +
+      `<td><b>${money(r.kpV)}</b></td><td>${r.ct}${r.direct?` <span class="tag d">${r.direct} без КП</span>`:''}</td>
+       <td>${money(r.ctV)}</td><td>${pct(r.won, r.kp)}</td></tr>`).join('') + `</tbody>`;
+  document.querySelectorAll('#topTable tr.clk').forEach(tr => tr.onclick = () => {
+    selCo = (selCo === tr.dataset.co) ? null : tr.dataset.co; render();
+    document.querySelector('.filters').scrollIntoView({behavior:'smooth', block:'start'});
+  });
+}
+
+/* ---------- поток ---------- */
+function renderFlow(){
+  const kp = kpSel(), ct = ctSel();
+  const linked = new Set(ct.filter(c => c.src).map(c => c.src));
+  const won = kp.filter(k => linked.has(k.id)).length;
+  const lost = kp.length - won;
+  const fromKp = ct.filter(c => c.src).length, direct = ct.filter(c => !c.src).length;
+  const W = 900, H = 250, top = 30, maxH = 170;
+  const s = maxH / Math.max(kp.length, 1);
+  const hW = Math.max(won*s, 3), hL = Math.max(lost*s, 3), hD = Math.max(direct*s, 3), hF = Math.max(fromKp*s, 3);
+  const x1 = 20, w1 = 34, x2 = 470, x3 = 700, w3 = 34;
+  const yL = top, yW = top + hL + 6;
+  const yF = top + hL + 6 + Math.max(0, (hW - hF)/2), yD = yF + hF + 6;
+  const band = (ya, ha, yb, hb, fill, op) =>
+    `<path d="M${x1+w1} ${ya} C${(x1+w1+x3)/2} ${ya}, ${(x1+w1+x3)/2} ${yb}, ${x3} ${yb} L${x3} ${yb+hb} C${(x1+w1+x3)/2} ${yb+hb}, ${(x1+w1+x3)/2} ${ya+ha}, ${x1+w1} ${ya+ha} Z" fill="${fill}" opacity="${op}"/>`;
+  let g = '';
+  g += band(yL, hL, top - 4, 2, '#C9CCD4', .5);
+  g += band(yW, hW, yF, hF, '#D6006E', .35);
+  g += `<path d="M${x3} ${yD} L${x3+0} ${yD+hD} L${x3-90} ${yD+hD+26} L${x3-90} ${yD+22} Z" fill="#D6006E" opacity=".2"/>`;
+  g += `<rect x="${x1}" y="${yL}" width="${w1}" height="${hL}" fill="#9AA0AC" rx="3"/>`;
+  g += `<rect x="${x1}" y="${yW}" width="${w1}" height="${hW}" fill="#0B0D12" rx="3"/>`;
+  g += `<rect x="${x3}" y="${yF}" width="${w3}" height="${hF}" fill="#D6006E" rx="3"/>`;
+  g += `<rect x="${x3}" y="${yD}" width="${w3}" height="${hD}" fill="#FF80B8" rx="3"/>`;
+  const T = (x,y,t,sz,w,f,anc) => `<text x="${x}" y="${y}" font-size="${sz}" font-weight="${w}" fill="${f}" text-anchor="${anc||'start'}" font-family="Golos Text, sans-serif">${t}</text>`;
+  g += T(x1, top-12, `${kp.length} КП направлено`, 15, 700, '#0B0D12');
+  g += T(x1+w1+12, yL+Math.min(hL/2,60)+4, `${lost} — договор не заключён`, 13, 600, '#5A6069');
+  g += T(x1+w1+12, yW+hW/2+4, `${won} КП → договор`, 13, 600, '#0B0D12');
+  g += T(x3+w3+12, yF+hF/2+4, `${fromKp} договоров по КП`, 13, 600, '#D6006E');
+  g += T(x3+w3+12, yD+hD/2+4, `${direct} договоров без КП`, 13, 600, '#B0005C');
+  g += T(x3, top-12, `${ct.length} договоров`, 15, 700, '#0B0D12');
+  g += T(x3-90, yD+hD+46, 'прямые заключения', 11.5, 500, '#767D89');
+  document.getElementById('flow').innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Поток от КП к договорам">${g}</svg>`;
+  document.getElementById('flowNote').textContent =
+    `${pct(won, kp.length)} запросов дошли до договора · ${pct(direct, ct.length)} договоров заключены без КП`;
+}
+
+/* ---------- договоры ---------- */
+function renderContracts(){
+  const ct = ctSel(), kp = kpSel();
+  const rows = selP.map(t => ({t, q: sum(ct, c => c.u[t]), kq: sum(kp, k => k.u[t])}));
+  const maxQ = Math.max(...rows.map(r => r.kq), 1);
+  document.getElementById('ctBars').innerHTML = rows.map(r => `
+    <div class="brow">
+      <div class="nm"><i class="sw" style="background:${PC[r.t]}"></i>${D.products[r.t].n}</div>
+      <div class="track" style="position:relative">
+        <div class="fill" style="width:${Math.max(r.kq/maxQ*100,1)}%;background:${PC[r.t]};opacity:.22"></div>
+        <div class="fill" style="width:${Math.max(r.q/maxQ*100,0.6)}%;background:${PC[r.t]};position:absolute;left:0;top:0;height:100%"></div>
+      </div>
+      <div class="rt"><b>${nf(r.q)} шт.</b> из ${nf(r.kq)} запрошенных · ${pct(r.q, r.kq)}</div>
+    </div>`).join('');
+  document.getElementById('ctTable').innerHTML =
+    `<thead><tr><th>Договор</th><th>Дата</th><th>Организация</th>` + selP.map(t => `<th>Изд. ${t+1}</th>`).join('') +
+    `<th>Сумма</th><th>Основание</th></tr></thead><tbody>` +
+    (ct.length ? ct.map(c => `<tr><td class="co">${c.id}</td><td>${dt(c)}</td><td style="text-align:left">${c.co}</td>` +
+      selP.map(t => `<td>${c.u[t] ? nf(c.u[t]) : '—'}</td>`).join('') +
+      `<td><b>${money(value(c))}</b></td><td>${c.src ? `<span class="tag k">${c.src}</span>` : `<span class="tag d">без КП</span>`}</td></tr>`).join('')
+      : `<tr><td colspan="9" class="empty">По выбранным условиям договоров нет</td></tr>`) + `</tbody>`;
+  document.getElementById('ctNote').textContent =
+    `${ct.length} шт. на ${money(sum(ct, value))} · заливкой показана доля от запрошенного в КП`;
+}
+
+function render(){
+  paintChips(); renderKpi(); renderProducts(); renderTop(); renderFlow(); renderContracts();
+}
+document.getElementById('period').textContent = D.period;
+document.getElementById('stamp').textContent = 'Отчёт для генерального директора';
+document.getElementById('foot').textContent =
+  'Данные по КП — фактические. Разбивка по организациям, помесячная динамика и все договоры смоделированы для демонстрации формы отчёта.';
+buildChips(); render();
+/* ---------- свои данные ---------- */
+const DEMO = JSON.parse(JSON.stringify({kp: D.kp, ct: D.ct, companies: D.companies, period: D.period}));
+const TPL_KP = 'id;организация;дата;изделие_1;изделие_2;изделие_3;изделие_4\r\nКП-001;Роснефть;15.02.2026;8;3;0;2\r\nКП-002;СИБУР;03.03.2026;5;0;0;1\r\n';
+const TPL_CT = 'id;организация;дата;изделие_1;изделие_2;изделие_3;изделие_4;основание_кп\r\nД-001;Роснефть;12.03.2026;5;2;0;0;КП-001\r\nД-002;СИБУР;20.03.2026;3;0;0;1;\r\n';
+
+function download(name, text){
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob(['\ufeff' + text], {type:'text/csv;charset=utf-8'}));
+  a.download = name; a.click(); URL.revokeObjectURL(a.href);
+}
+function splitRows(text){
+  const d = (text.split('\n')[0].match(/;/g)||[]).length >= (text.split('\n')[0].match(/,/g)||[]).length ? ';' : ',';
+  return text.replace(/\r/g,'').split('\n').filter(l => l.trim())
+    .map(l => l.split(d).map(c => c.trim().replace(/^"|"$/g,'')));
+}
+function toNum(s){ const v = parseFloat(String(s||'').replace(/\s/g,'').replace(',','.')); return isFinite(v) ? Math.round(v) : 0; }
+function toDate(s){
+  const p = String(s||'').match(/(\d{1,4})[.\-\/](\d{1,2})[.\-\/](\d{2,4})/);
+  if(!p) return {d:1, m:0};
+  const dd = p[1].length === 4 ? +p[3] : +p[1], mm = +p[2];
+  return {d: Math.min(Math.max(dd,1),31), m: Math.min(Math.max(mm,1),12) - 1};
+}
+function readRows(rows, isCt){
+  const out = [];
+  rows.slice(1).forEach((r,i) => {
+    if(r.length < 7 || !r[1]) return;
+    const dt = toDate(r[2]);
+    const rec = {id: r[0] || (isCt?'Д-':'КП-') + (i+1), co: r[1], m: dt.m, d: dt.d,
+                 u: [toNum(r[3]), toNum(r[4]), toNum(r[5]), toNum(r[6])]};
+    if(isCt) rec.src = (r[7] || '').trim() || null;
+    if(rec.u.some(x => x > 0)) out.push(rec);
+  });
+  return out;
+}
+function rebuildCompanies(){
+  const cnt = {};
+  D.kp.forEach(k => cnt[k.co] = (cnt[k.co]||0) + 1);
+  D.ct.forEach(c => cnt[c.co] = cnt[c.co] || 0);
+  D.companies = Object.keys(cnt).sort((a,b) => cnt[b] - cnt[a] || a.localeCompare(b,'ru'));
+  if(selCo && !D.companies.includes(selCo)) selCo = null;
+  buildCoChips();
+}
+function status(msg, cls){
+  const el = document.getElementById('impStatus');
+  el.className = 'empty'; el.innerHTML = cls ? `<span class="${cls}">${msg}</span>` : msg;
+}
+function loadFile(input, isCt){
+  const f = input.files && input.files[0];
+  if(!f) return;
+  const fr = new FileReader();
+  fr.onload = () => {
+    try{
+      const recs = readRows(splitRows(fr.result), isCt);
+      if(!recs.length){ status('В файле «' + f.name + '» не нашлось строк с данными. Проверьте порядок колонок по шаблону.', 'err'); return; }
+      if(isCt){ D.ct = recs.sort((a,b) => a.m - b.m || a.d - b.d); } else { D.kp = recs; }
+      rebuildCompanies(); render();
+      status('Загружено: ' + recs.length + (isCt ? ' договоров' : ' КП') + ' из «' + f.name + '».', 'ok');
+    }catch(e){ status('Не удалось разобрать файл: ' + e.message, 'err'); }
+  };
+  fr.readAsText(f, 'utf-8');
+}
+function bindImport(){
+  document.getElementById('tplKp').onclick = () => download('КП.csv', TPL_KP);
+  document.getElementById('tplCt').onclick = () => download('Договоры.csv', TPL_CT);
+  document.getElementById('fileKp').onchange = function(){ loadFile(this, false); };
+  document.getElementById('fileCt').onchange = function(){ loadFile(this, true); };
+  document.getElementById('resetData').onclick = () => {
+    D.kp = JSON.parse(JSON.stringify(DEMO.kp)); D.ct = JSON.parse(JSON.stringify(DEMO.ct));
+    selCo = null; rebuildCompanies(); render();
+    status('Вернули демо-данные.', 'ok');
+  };
+  [0,1,2,3].forEach(i => {
+    const el = document.getElementById('pr' + i);
+    el.value = D.prices[i];
+    el.onchange = () => { const v = parseFloat(String(el.value).replace(',','.')); if(isFinite(v) && v >= 0){ D.prices[i] = v; render(); } else el.value = D.prices[i]; };
+  });
+}
+bindImport();
+
+</script>
+</body>
+</html>
