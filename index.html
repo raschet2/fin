@@ -133,7 +133,8 @@ footer{color:var(--mute);font-size:12px;text-align:center;padding:6px 10px}
 
   <div class="card">
     <div class="cardhead"><h2>От запроса до договора</h2><span class="note" id="flowNote"></span></div>
-    <div id="flow"></div>
+    <div class="bars" id="flowBars"></div>
+    <div class="legend" id="flowLegend"></div>
   </div>
 
   <div class="card">
@@ -315,31 +316,35 @@ function renderFlow(){
   const won = kp.filter(k => linked.has(k.id)).length;
   const lost = kp.length - won;
   const fromKp = ct.filter(c => c.src).length, direct = ct.filter(c => !c.src).length;
-  const W = 900, H = 250, top = 30, maxH = 170;
-  const s = maxH / Math.max(kp.length, 1);
-  const hW = Math.max(won*s, 3), hL = Math.max(lost*s, 3), hD = Math.max(direct*s, 3), hF = Math.max(fromKp*s, 3);
-  const x1 = 20, w1 = 34, x2 = 470, x3 = 700, w3 = 34;
-  const yL = top, yW = top + hL + 6;
-  const yF = top + hL + 6 + Math.max(0, (hW - hF)/2), yD = yF + hF + 6;
-  const band = (ya, ha, yb, hb, fill, op) =>
-    `<path d="M${x1+w1} ${ya} C${(x1+w1+x3)/2} ${ya}, ${(x1+w1+x3)/2} ${yb}, ${x3} ${yb} L${x3} ${yb+hb} C${(x1+w1+x3)/2} ${yb+hb}, ${(x1+w1+x3)/2} ${ya+ha}, ${x1+w1} ${ya+ha} Z" fill="${fill}" opacity="${op}"/>`;
-  let g = '';
-  g += band(yL, hL, top - 4, 2, '#C9CCD4', .5);
-  g += band(yW, hW, yF, hF, '#D6006E', .35);
-  g += `<path d="M${x3} ${yD} L${x3+0} ${yD+hD} L${x3-90} ${yD+hD+26} L${x3-90} ${yD+22} Z" fill="#D6006E" opacity=".2"/>`;
-  g += `<rect x="${x1}" y="${yL}" width="${w1}" height="${hL}" fill="#9AA0AC" rx="3"/>`;
-  g += `<rect x="${x1}" y="${yW}" width="${w1}" height="${hW}" fill="#0B0D12" rx="3"/>`;
-  g += `<rect x="${x3}" y="${yF}" width="${w3}" height="${hF}" fill="#D6006E" rx="3"/>`;
-  g += `<rect x="${x3}" y="${yD}" width="${w3}" height="${hD}" fill="#FF80B8" rx="3"/>`;
-  const T = (x,y,t,sz,w,f,anc) => `<text x="${x}" y="${y}" font-size="${sz}" font-weight="${w}" fill="${f}" text-anchor="${anc||'start'}" font-family="Golos Text, sans-serif">${t}</text>`;
-  g += T(x1, top-12, `${kp.length} КП направлено`, 15, 700, '#0B0D12');
-  g += T(x1+w1+12, yL+Math.min(hL/2,60)+4, `${lost} — договор не заключён`, 13, 600, '#5A6069');
-  g += T(x1+w1+12, yW+hW/2+4, `${won} КП → договор`, 13, 600, '#0B0D12');
-  g += T(x3+w3+12, yF+hF/2+4, `${fromKp} договоров по КП`, 13, 600, '#D6006E');
-  g += T(x3+w3+12, yD+hD/2+4, `${direct} договоров без КП`, 13, 600, '#B0005C');
-  g += T(x3, top-12, `${ct.length} договоров`, 15, 700, '#0B0D12');
-  g += T(x3-90, yD+hD+46, 'прямые заключения', 11.5, 500, '#767D89');
-  document.getElementById('flow').innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Поток от КП к договорам">${g}</svg>`;
+
+  const wonPct = kp.length ? won/kp.length*100 : 0;
+  const fromKpPct = ct.length ? fromKp/ct.length*100 : 0;
+  const directPct = ct.length ? direct/ct.length*100 : 0;
+
+  const rows = [];
+  rows.push(`
+    <div class="brow flowrow">
+      <div class="nm">КП направлено</div>
+      <div class="track" style="position:relative">
+        <div class="fill" style="width:100%;background:var(--line-2)"></div>
+        <div class="fill" style="width:${Math.max(wonPct,kp.length&&won?1.4:0)}%;background:#0B0D12;position:absolute;left:0;top:0;height:100%"></div>
+      </div>
+      <div class="rt"><b>${nf(kp.length)}</b> · из них ${nf(won)} стали договором</div>
+    </div>`);
+  rows.push(`
+    <div class="brow flowrow">
+      <div class="nm">Договоры</div>
+      <div class="track" style="display:flex">
+        <div class="fill" style="width:${ct.length?Math.max(fromKpPct,2):0}%;background:#0B0D12;border-radius:6px 0 0 6px"></div>
+        <div class="fill" style="width:${ct.length?Math.max(directPct,2):0}%;background:var(--ct);border-radius:0 6px 6px 0"></div>
+      </div>
+      <div class="rt"><b>${nf(ct.length)}</b> всего</div>
+    </div>`);
+  document.getElementById('flowBars').innerHTML = rows.join('');
+  document.getElementById('flowLegend').innerHTML =
+    `<span><i class="sw" style="background:#0B0D12"></i>${nf(fromKp)} — через цепочку запрос → КП → договор</span>` +
+    `<span><i class="sw" style="background:var(--ct)"></i>${nf(direct)} — заключены сразу, без КП</span>` +
+    `<span><i class="sw" style="background:var(--line-2);border:1px solid var(--line)"></i>${nf(lost)} — КП не переросли в договор</span>`;
   document.getElementById('flowNote').textContent =
     `${pct(won, kp.length)} запросов дошли до договора · ${pct(direct, ct.length)} договоров заключены без КП`;
 }
