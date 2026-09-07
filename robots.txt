@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://ВАШ-НИК.github.io/ВАШ-РЕПОЗИТОРИЙ/sitemap.xml
