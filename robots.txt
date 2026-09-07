@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://ВАШ-НИК.github.io/ВАШ-РЕПОЗИТОРИЙ/sitemap.xml
+Sitemap: https://raschet2.github.io/fin/sitemap.xml
